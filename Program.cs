@@ -1,11 +1,14 @@
+using CadastroProdutos.Dtos;
+using CadastroProdutos.Infrastructure;
 using CadastroProdutos.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-// builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlite("Data Source = Produtos.db"));
 
 builder.Services.AddScoped<IProdutosService, ProdutosService>();
 
@@ -14,12 +17,7 @@ var app = builder.Build();
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-
-    // app.UseSwagger();
-    // app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
 
@@ -32,7 +30,7 @@ var produtos = new List<Produto>
 
 app.MapGet("/produtos", () => produtos);
 
-app.MapGet("/produtos/{id}", (int id) =>
+app.MapGet("/produtos/{id:int}", (int id) =>
 {
     var produto = produtos.FirstOrDefault(p => p.Id == id);
     
@@ -48,7 +46,7 @@ app.MapPost("/produtos", (Produto novoProduto) =>
     return Results.Created();
 });
 
-app.MapPut("/produtos/{id}", (int id, Produto produtoAtualizado) =>
+app.MapPut("/produtos/{id:int}", (int id, Produto produtoAtualizado) =>
 {
     var produto = produtos.FirstOrDefault(x => x.Id == id);
     if (produto is null)
@@ -61,25 +59,7 @@ app.MapPut("/produtos/{id}", (int id, Produto produtoAtualizado) =>
     return Results.NoContent();
 });
 
-// app.MapPatch("/produtos/{id}", (int id, ProdutoPatchDto patch) =>
-// {
-//     var produto = produtos.FirstOrDefault(p => p.Id == id);
-//     if (produto is null)
-//         return Results.NotFound($"Produto com ID {id} não encontrado.");
-    
-//     if (patch.Nome is not null)
-//         produto.Nome = patch.Nome;
-    
-//     if (patch.Preco.HasValue)
-//         produto.Preco = patch.Preco.Value;
-    
-//     if (patch.Estoque.HasValue)
-//         produto.Estoque = patch.Estoque.Value;
-
-//     return Results.NoContent();
-// });
-
-app.MapDelete("/produtos/{id}", (int id) => 
+app.MapDelete("/produtos/{id:int}", (int id) => 
 {
    var produto = produtos.FirstOrDefault(p => p.Id == id);
 
@@ -92,18 +72,3 @@ app.MapDelete("/produtos/{id}", (int id) =>
 });
 
 app.Run();
-
-public class Produto
-{
-    public int Id { get; set; }
-    public required string Nome { get; set; } = "";
-    public decimal Preco { get; set; } = 0;
-    public int Estoque { get; set; } = 0;
-}
-
-// class ProdutoPatchDto
-// {
-//     public string? Nome { get; set; }
-//     public decimal? Preco { get; set; }
-//     public int? Estoque { get; set; }
-// }
