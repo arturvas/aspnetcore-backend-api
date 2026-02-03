@@ -1,41 +1,44 @@
 using CadastroProdutos.Dtos;
+using CadastroProdutos.Infrastructure;
 
 namespace CadastroProdutos.Services;
 
-public class ProdutosService : IProdutosService
+public class ProdutosRepositoryService(MyDbContext myDbContext) : IProdutosService
 {
-    private readonly List<Produto> _produtos =
-    [
-        new Produto { Id = 1, Nome = "Mouse sem fio", Preco = 99.9m, Estoque = 57 },
-        new Produto { Id = 2, Nome = "Teclado sem fio", Preco = 249.9m, Estoque = 30 },
-        new Produto { Id = 3, Nome = "Headset sem fio", Preco = 330.9m, Estoque = 16 }
-    ];
-
-    public List<Produto> ObterTodos() => _produtos;
-    
-    public Produto? ObterPorId(int id) => _produtos.FirstOrDefault(x => x.Id == id);
+    public List<Produto> ObterTodos()
+    {
+        return myDbContext.Produtos.ToList();
+    }
 
     public void Adicionar(Produto novoProduto)
     {
-        _produtos.Add(novoProduto);
+        myDbContext.Produtos.Add(novoProduto);
+        myDbContext.SaveChanges();
+    }
+
+    public Produto? ObterPorId(int id)
+    {
+        return myDbContext.Produtos.Find(id);
     }
 
     public Produto? Atualizar(int id, Produto produtoAtualizado)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        var produto = myDbContext.Produtos.Find(id);
         if (produto is null)
             return null;
-        
+
         produto.Nome = produtoAtualizado.Nome;
         produto.Preco = produtoAtualizado.Preco;
         produto.Estoque = produtoAtualizado.Estoque;
+
+        myDbContext.SaveChanges();
 
         return produto;
     }
 
     public Produto? AtualizarParcial(int id, ProdutoPatchDto patch)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        var produto = myDbContext.Produtos.Find(id);
         if (produto is null)
             return null;
 
@@ -48,18 +51,20 @@ public class ProdutosService : IProdutosService
         if (patch.Estoque.HasValue)
             produto.Estoque = patch.Estoque.Value;
 
+        myDbContext.SaveChanges();
+
         return produto;
     }
 
     public bool Remover(int id)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        var produto = myDbContext.Produtos.Find(id);
 
         if (produto is null)
             return false;
 
-        _produtos.Remove(produto);
+        myDbContext.Produtos.Remove(produto);
+        myDbContext.SaveChanges();
         return true;
     }
-    
 }

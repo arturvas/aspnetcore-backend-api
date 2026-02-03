@@ -11,7 +11,7 @@ namespace CadastroProdutos.Controllers
         [HttpGet]
         public ActionResult<List<Produto>> Get()
         {
-            return Ok(produtosService.ObterTodos);
+            return Ok(produtosService.ObterTodos());
         }
 
         [HttpGet("{id:int}")]

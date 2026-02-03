@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlite("Data Source = Produtos.db"));
 
-builder.Services.AddScoped<IProdutosService, ProdutosService>();
+builder.Services.AddScoped<IProdutosService, ProdutosRepositoryService>();
 
 var app = builder.Build();
 
