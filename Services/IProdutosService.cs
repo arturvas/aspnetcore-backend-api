@@ -1,13 +1,14 @@
 using CadastroProdutos.Dtos;
+using CadastroProdutos.Entities;
 
 namespace CadastroProdutos.Services;
 
 public interface IProdutosService
 {
-    List<Produto> ObterTodos();
-    Produto? ObterPorId(int id);
-    void Adicionar(Produto novoProduto);
-    Produto? Atualizar(int id, Produto produtoAtualizado);
-    Produto? AtualizarParcial(int id, ProdutoPatchDto patch);
+    List<ProdutoEntity> ObterTodos();
+    ProdutoEntity? ObterPorId(int id);
+    void Adicionar(ProdutoEntity novoProduto);
+    ProdutoEntity? Atualizar(int id, ProdutoEntity produtoAtualizado);
+    ProdutoEntity? AtualizarParcial(int id, ProdutoPatchDto patch);
     bool Remover(int id);
 }

@@ -1,16 +1,16 @@
-using CadastroProdutos.Dtos;
 using CadastroProdutos.Infrastructure;
 using CadastroProdutos.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<MyDbContext>(options => options.UseSqlite("Data Source = Produtos.db"));
+builder.Services.AddDbContext<MyDbContext>(options => 
+    options.UseSqlite("Data Source = Produtos.db"));
 
-builder.Services.AddScoped<IProdutosService, ProdutosRepositoryService>();
+builder.Services.AddScoped<IProdutosService, ProdutosService>();
 
 var app = builder.Build();
 

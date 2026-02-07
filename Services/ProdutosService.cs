@@ -1,65 +1,70 @@
 using CadastroProdutos.Dtos;
+using CadastroProdutos.Entities;
+using CadastroProdutos.Infrastructure;
 
 namespace CadastroProdutos.Services;
 
-public class ProdutosService : IProdutosService
+public class ProdutosService(MyDbContext myDbContext) : IProdutosService
 {
-    private readonly List<Produto> _produtos =
-    [
-        new Produto { Id = 1, Nome = "Mouse sem fio", Preco = 99.9m, Estoque = 57 },
-        new Produto { Id = 2, Nome = "Teclado sem fio", Preco = 249.9m, Estoque = 30 },
-        new Produto { Id = 3, Nome = "Headset sem fio", Preco = 330.9m, Estoque = 16 }
-    ];
-
-    public List<Produto> ObterTodos() => _produtos;
-    
-    public Produto? ObterPorId(int id) => _produtos.FirstOrDefault(x => x.Id == id);
-
-    public void Adicionar(Produto novoProduto)
+    public List<ProdutoEntity> ObterTodos()
     {
-        _produtos.Add(novoProduto);
+        return myDbContext.Produtos.ToList();
     }
 
-    public Produto? Atualizar(int id, Produto produtoAtualizado)
+    public void Adicionar(ProdutoEntity novoProduto)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        myDbContext.Produtos.Add(novoProduto);
+        myDbContext.SaveChanges();
+    }
+
+    public ProdutoEntity? ObterPorId(int id)
+    {
+        return myDbContext.Produtos.Find(id);
+    }
+
+    public ProdutoEntity? Atualizar(int id, ProdutoEntity produtoAtualizado)
+    {
+        var produto = myDbContext.Produtos.Find(id);
         if (produto is null)
             return null;
         
-        produto.Nome = produtoAtualizado.Nome;
-        produto.Preco = produtoAtualizado.Preco;
-        produto.Estoque = produtoAtualizado.Estoque;
+        produto.Renomear(produtoAtualizado.Nome);
+        produto.AtualizarPreco(produtoAtualizado.Preco);
+        produto.AtualizarEstoque(produtoAtualizado.Estoque);
 
+        myDbContext.SaveChanges();
         return produto;
     }
 
-    public Produto? AtualizarParcial(int id, ProdutoPatchDto patch)
+    public ProdutoEntity? AtualizarParcial(int id, ProdutoPatchDto patch)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        var produto = myDbContext.Produtos.Find(id);
         if (produto is null)
             return null;
 
         if (patch.Nome is not null)
-            produto.Nome = patch.Nome;
+            produto.Renomear(patch.Nome);
 
         if (patch.Preco.HasValue)
-            produto.Preco = patch.Preco.Value;
+            produto.AtualizarPreco(patch.Preco.Value);
 
         if (patch.Estoque.HasValue)
-            produto.Estoque = patch.Estoque.Value;
+            produto.AtualizarEstoque(patch.Estoque.Value);
+
+        myDbContext.SaveChanges();
 
         return produto;
     }
 
     public bool Remover(int id)
     {
-        var produto = _produtos.FirstOrDefault(x => x.Id == id);
+        var produto = myDbContext.Produtos.Find(id);
 
         if (produto is null)
             return false;
 
-        _produtos.Remove(produto);
+        myDbContext.Produtos.Remove(produto);
+        myDbContext.SaveChanges();
         return true;
     }
-    
 }
