@@ -1,4 +1,5 @@
 using CadastroProdutos.Dtos;
+using CadastroProdutos.Entities;
 using CadastroProdutos.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,13 +10,13 @@ namespace CadastroProdutos.Controllers
     public class ProdutosController(IProdutosService produtosService) : ControllerBase
     {
         [HttpGet]
-        public ActionResult<List<Produto>> Get()
+        public ActionResult<List<ProdutoEntity>> Get()
         {
             return Ok(produtosService.ObterTodos());
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Produto> GetById(int id)
+        public ActionResult<ProdutoEntity> GetById(int id)
         {
             var produto = produtosService.ObterPorId(id);
 
@@ -26,22 +27,20 @@ namespace CadastroProdutos.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Produto novoProduto)
+        public ActionResult Post(ProdutoEntity novoProduto)
         {
             produtosService.Adicionar(novoProduto);
 
-            return Created();
+            return CreatedAtAction(nameof(GetById), new { id = novoProduto.Id }, novoProduto);
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produtoAtualizado)
+        public ActionResult Put(int id, ProdutoEntity produtoAtualizado)
         {
-            var produto = produtosService.ObterPorId(id);
+            var produto = produtosService.Atualizar(id, produtoAtualizado);
 
             if (produto is null)
                 return NotFound($"Produto com Id [{id}] não encontrado.");
-            
-            produtosService.Atualizar(id, produtoAtualizado);
             
             return NoContent();
         }
@@ -49,26 +48,22 @@ namespace CadastroProdutos.Controllers
         [HttpPatch("{id:int}")]
         public ActionResult Patch(int id, ProdutoPatchDto patch)
         {
-            var produto = produtosService.ObterPorId(id);
-            
-            produtosService.AtualizarParcial(id, patch);
+            var produto = produtosService.AtualizarParcial(id, patch);
             
             if (produto is null)
                 return NotFound($"Produto com ID {id} não encontrado.");
 
-            return NoContent();
+            return Ok(produto);
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var produto = produtosService.ObterPorId(id);
+            var sucesso = produtosService.Remover(id);
 
-            if (produto is null)
+            if (!sucesso)
                 return NotFound($"Produto com ID [{id}] não encontrado.");
-
-            produtosService.Remover(id);
-
+            
             return NoContent();
         }
 
