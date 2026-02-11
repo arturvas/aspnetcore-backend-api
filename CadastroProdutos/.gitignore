@@ -4,6 +4,8 @@ Produtos.db*
 bin/
 obj/
 
+CadastroProdutos.env.json
+
 # User-specific files
 *.suo
 *.user

@@ -10,9 +10,7 @@ public class ProdutoEntity
     [Range(0.01, double.MaxValue)] public decimal Preco { get; private set; }
     public int Estoque { get; private set; }
 
-    protected ProdutoEntity()
-    {
-    }
+    protected ProdutoEntity() { }
 
     public ProdutoEntity(string nome, decimal preco, int estoque)
     {
