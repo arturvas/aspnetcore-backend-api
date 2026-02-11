@@ -1,6 +1,4 @@
 @CadastroProdutos_HostAddress = http://localhost:5045
 
-GET {{CadastroProdutos_HostAddress}}/weatherforecast/
+GET {{CadastroProdutos_HostAddress}}/api/Produtos
 Accept: application/json
-
-###
