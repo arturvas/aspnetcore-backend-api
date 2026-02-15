@@ -9,15 +9,8 @@ namespace CadastroProdutos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController(IConfiguration configuration) : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-
-        public LoginController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         [HttpPost]
         public ActionResult Login(LoginRequest login)
         {
@@ -37,14 +30,17 @@ namespace CadastroProdutos.Controllers
             }
             
             // criar o token JWT
-            var jwtConfig = _configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtConfig["Key"] ?? string.Empty);
+            var jwtConfig = configuration.GetSection("Jwt");
+            var keyString = jwtConfig["Key"]
+                            ?? throw new Exception("JWT Key nao configurada");
+            
+            var key = Encoding.ASCII.GetBytes(keyString);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity([
-                    new Claim("usuario", login.Usuario),
+                    new Claim(ClaimTypes.Name, login.Usuario),
                     new Claim(ClaimTypes.Role, role)
                 ]),
                 Expires = DateTime.UtcNow.AddHours(1),

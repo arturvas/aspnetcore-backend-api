@@ -16,7 +16,8 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 builder.Services.AddScoped<IProdutosService, ProdutosService>();
 
 var jwtConfig = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtConfig["Key"]);
+var keyString = jwtConfig["Key"] ?? throw new Exception("JWT Key nao configurada");
+var key = Encoding.ASCII.GetBytes(keyString);
 
 builder.Services.AddAuthentication(options =>
 {
