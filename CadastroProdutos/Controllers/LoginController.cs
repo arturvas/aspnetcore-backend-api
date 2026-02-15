@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using CadastroProdutos.Dtos.Requests;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
 
 namespace CadastroProdutos.Controllers
 {
@@ -12,11 +11,11 @@ namespace CadastroProdutos.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public LoginController(IConfiguration configuration)
         {
-            configuration = _configuration;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -39,7 +38,7 @@ namespace CadastroProdutos.Controllers
             
             // criar o token JWT
             var jwtConfig = _configuration.GetSection("Jwt");
-            var key = Encoding.ASCII.GetBytes(jwtConfig["Key"]);
+            var key = Encoding.ASCII.GetBytes(jwtConfig["Key"] ?? string.Empty);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor()
