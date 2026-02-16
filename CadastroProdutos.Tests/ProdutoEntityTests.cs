@@ -19,12 +19,21 @@ public class ProdutoEntityTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    [InlineData(null)]
     public void Renomear_ComNomeInvalido_DeveLancarDomainException(string nomeInvalido)
     {
         var produto = new ProdutoEntity("Valido", 10, 10);
 
         var acao = () => produto.Renomear(nomeInvalido);
+
+        acao.Should().Throw<DomainException>().WithMessage("Nome vazio");
+    }
+
+    [Fact]
+    public void Renomear_ComNomeNull_DeveLancarDomainException()
+    {
+        var produto = new ProdutoEntity("Valido", 10, 10);
+
+        var acao = () => produto.Renomear(null!);
 
         acao.Should().Throw<DomainException>().WithMessage("Nome vazio");
     }
