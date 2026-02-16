@@ -4,11 +4,30 @@ using CadastroProdutos.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Name = "Authorization",
+        Description = "Insira o JWT no campo abaixo usando o seguinte formato: Bearer {seu_token}.",
+        In = ParameterLocation.Header
+    });
+    
+    options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", doc)] = []
+    });
+});
 
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlite("Data Source = Produtos.db"));
@@ -41,7 +60,11 @@ var app = builder.Build();
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
+}
 
 app.UseHttpsRedirection();
 
