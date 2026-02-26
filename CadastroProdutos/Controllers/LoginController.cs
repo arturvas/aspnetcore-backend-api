@@ -19,10 +19,10 @@ namespace CadastroProdutos.Controllers
             
             switch (login)
             {
-                case { Usuario: "admin", Senha: "exemplo123" }:
+                case { Usuario: "admin", Senha: "admin123" }:
                     role = "admin";
                     break;
-                case { Usuario: "cliente", Senha: "exemplo123" }:
+                case { Usuario: "cliente", Senha: "cliente123" }:
                     role = "cliente";
                     break;
                 default:

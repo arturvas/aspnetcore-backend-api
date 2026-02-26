@@ -1,10 +1,12 @@
 using CadastroProdutos.Dtos;
 using CadastroProdutos.Entities;
 using CadastroProdutos.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CadastroProdutos.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProdutosController(IProdutosService produtosService) : ControllerBase
@@ -15,6 +17,7 @@ namespace CadastroProdutos.Controllers
             return Ok(produtosService.ObterTodos());
         }
 
+        [Authorize(Roles = "admin")]
         [HttpGet("{id:int}")]
         public ActionResult<ProdutoEntity> GetById(int id)
         {
@@ -26,6 +29,7 @@ namespace CadastroProdutos.Controllers
             return Ok(produto);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public ActionResult Post(ProdutoEntity novoProduto)
         {
@@ -34,6 +38,7 @@ namespace CadastroProdutos.Controllers
             return CreatedAtAction(nameof(GetById), new { id = novoProduto.Id }, novoProduto);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, ProdutoEntity produtoAtualizado)
         {
@@ -45,6 +50,7 @@ namespace CadastroProdutos.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPatch("{id:int}")]
         public ActionResult Patch(int id, ProdutoPatchDto patch)
         {
@@ -56,6 +62,7 @@ namespace CadastroProdutos.Controllers
             return Ok(produto);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
